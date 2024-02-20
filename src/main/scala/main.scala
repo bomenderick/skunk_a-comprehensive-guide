@@ -7,19 +7,11 @@ import pureconfig.{ConfigSource, loadConfigOrThrow}
 import pureconfig.error.ConfigReaderFailures
 import skunk_guide.db.UserRepository
 import skunk_guide.domain.Config
-
-//@main
-//def main(): Unit = {
-//  println("Hello world!")
-//}
+import skunk_guide.modules.Resources
 
 object main extends IOApp {
 
       override def run(args: List[String]): IO[ExitCode] =
-//        val config = ConfigSource.default.loadOrThrow[Config]
-//        for {
-//          _ <- IO(println(config.toString))
-//        } yield ExitCode.Success
         val config: Either[ConfigReaderFailures, Config] = ConfigSource.default.load[Config]
         config match
           case Left(configFailure) =>
@@ -27,16 +19,11 @@ object main extends IOApp {
               _ <- IO(println("Failed to load configurations"))
               _ <- IO(println(configFailure.toString))
             } yield ExitCode.Success
+            
           case Right(configValues) =>
-            val sessionPool: Resource[IO, Session[IO]] = Session.single[IO](
-              host = configValues.host,
-              port = configValues.port,
-              user = configValues._user,
-              password = Some(configValues.password),
-              database = configValues.database
-            )
+            val resource = new Resources[IO].single(configValues)
             for {
-              userRepo <- UserRepository.make[IO](sessionPool)
+              userRepo <- UserRepository.make[IO](resource)
               _ <- IO(println("Creating users" + "_" * 50))
               johnId <- userRepo.create("John", "email@john.com")
               _ <- IO(println("John created with id: " + johnId))
@@ -47,6 +34,5 @@ object main extends IOApp {
               _ <- IO(println("Fetching all users" + "_" * 50))
               users <- userRepo.findAll.compile.toList
               _ <- IO(println("Users found: " + users.toString()))
-
             } yield ExitCode.Success
 }

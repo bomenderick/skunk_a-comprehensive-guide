@@ -1,16 +1,15 @@
 package skunk_guide.domain
 
-import pureconfig.ConfigReader
+import pureconfig.{ConfigReader, ConfigSource}
 import pureconfig.generic.derivation.default.*
 
 /**
   * Created by Bomen Derick.
   */
-case class Config (
+final case class Config (
     host: String,
     port: Int,
+    username: String,
     password: String,
-    _user: String,
-    database: String,
-    maxConnections: Int
+    database: String
 ) derives ConfigReader
