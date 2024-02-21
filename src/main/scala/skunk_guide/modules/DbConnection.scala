@@ -1,4 +1,4 @@
-package playground
+package skunk_guide.modules
 
 import cats.effect.{Resource, Temporal}
 import cats.effect.std.Console
@@ -19,6 +19,7 @@ final class DbConnection[F[_] : Temporal : Trace : Network: Console] {
       database = config.database,
   )
 
+  // max = 10 represent a maximum of 10 concurrent sessions
   def pooled(config: Config): Resource[F, Resource[F, Session[F]]] = Session.pooled(
       host = config.host,
       port = config.port,
@@ -28,3 +29,4 @@ final class DbConnection[F[_] : Temporal : Trace : Network: Console] {
       max = 10
   )
 }
+

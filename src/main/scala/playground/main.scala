@@ -4,7 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp, Resource}
 import pureconfig.ConfigSource
 import pureconfig.error.ConfigReaderFailures
 import skunk_guide.domain.Config
-import playground.DbConnection
+import playground.DbConnect
 import skunk.*
 import skunk.implicits.*
 import skunk.codec.all.*
@@ -24,8 +24,8 @@ object main extends IOApp {
         } yield ExitCode.Success
 
       case Right(configValues) =>
-        val resource: Resource[IO, Session[IO]] = new DbConnection[IO].single(configValues)
-        val resources: Resource[IO, Resource[IO, Session[IO]]] = new DbConnection[IO].pooled(configValues)
+        val resource: Resource[IO, Session[IO]] = new DbConnect[IO].single(configValues)
+        val resources: Resource[IO, Resource[IO, Session[IO]]] = new DbConnect[IO].pooled(configValues)
         resource.use { session =>
           for {
             _           <- IO(println("Using a single session..."))

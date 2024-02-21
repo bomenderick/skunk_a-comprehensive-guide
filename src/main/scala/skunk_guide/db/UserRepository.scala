@@ -8,7 +8,6 @@ import skunk.implicits.*
 import skunk_guide.domain.User
 import skunk_guide.db.Repository
 import fs2.Stream
-import org.typelevel.twiddles.syntax.toTwiddleOpTwo
 
 import java.util.UUID
 
@@ -49,7 +48,7 @@ object UserRepository {
       case id ~ name ~ email => User(id, name, email)
     }{user => user.id ~ user.name ~ user.email }
 
-  val selectAll: Query[Void, User] =
+  private val selectAll: Query[Void, User] =
     sql"""
          SELECT * FROM users
        """.query(codec)
@@ -78,5 +77,5 @@ object UserRepository {
     sql"""
          DELETE FROM users
          WHERE id = $uuid
-       """.command.contramap(a => a)
+       """.command.contramap(i => i)
 }
