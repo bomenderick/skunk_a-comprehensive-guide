@@ -3,11 +3,12 @@ package skunk_guide.db
 import cats.effect.{Resource, Sync}
 import cats.implicits.*
 import skunk.{Codec, Command, Query, Session, Void, ~}
-import skunk.codec.all.{uuid, varchar}
+import skunk.codec.all.*
 import skunk.implicits.*
 import skunk_guide.domain.User
 import skunk_guide.db.Repository
 import fs2.Stream
+import org.typelevel.twiddles.syntax.toTwiddleOpTwo
 
 import java.util.UUID
 
@@ -46,7 +47,7 @@ object UserRepository {
   private val codec: Codec[User] =
     (uuid ~ varchar ~ varchar).imap {
       case id ~ name ~ email => User(id, name, email)
-    }(user => user.id ~ user.name ~ user.email)
+    }{user => user.id ~ user.name ~ user.email }
 
   val selectAll: Query[Void, User] =
     sql"""

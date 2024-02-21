@@ -17,14 +17,14 @@ trait Repository[F[_], E](resource: Resource[F, Session[F]]) {
 
   protected def findOneBy[A](query: Query[A, E], argument: A)(implicit F: Sync[F]): F[Option[E]] =
     run { session =>
-      session.prepareR(query).use { preparedQuery =>
+      session.prepare(query).flatMap { preparedQuery =>
         preparedQuery.option(argument)
       }
     }
 
   protected def update[A](command: Command[A], argument: A)(implicit F: Sync[F]): F[Unit] =
     run { session =>
-      session.prepareR(command).use { preparedCommand =>
+      session.prepare(command).flatMap { preparedCommand =>
         preparedCommand.execute(argument).void
       }
     }
