@@ -2,16 +2,16 @@ package playground
 
 import cats.effect.{Resource, Temporal}
 import cats.effect.std.Console
+import com.rockthejvm.domain.Config
 import fs2.io.net.Network
 import natchez.Trace
 import skunk.Session
-import skunk_guide.domain.Config
 
 /**
   * Created by Bomen Derick.
   */
-final class DbConnect[F[_] : Temporal : Trace : Network: Console] {
-  def single(config: Config): Resource[F, Session[F]] = Session.single(
+object DbConnect {
+  def single[F[_] : Temporal : Trace : Network: Console](config: Config): Resource[F, Session[F]] = Session.single(
       host = config.host,
       port = config.port,
       user = config.username,
@@ -19,7 +19,7 @@ final class DbConnect[F[_] : Temporal : Trace : Network: Console] {
       database = config.database,
   )
   
-  def pooled(config: Config): Resource[F, Resource[F, Session[F]]] = Session.pooled(
+  def pooled[F[_] : Temporal : Trace : Network: Console](config: Config): Resource[F, Resource[F, Session[F]]] = Session.pooled(
       host = config.host,
       port = config.port,
       user = config.username,

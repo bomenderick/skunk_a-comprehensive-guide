@@ -1,4 +1,4 @@
-package skunk_guide.domain
+package com.rockthejvm.domain
 
 import java.util.UUID
 

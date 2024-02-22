@@ -1,12 +1,11 @@
-package skunk_guide.db
+package com.rockthejvm.db
 
 import cats.effect.{Resource, Sync}
-import cats.implicits.*
+import cats.syntax.all.*
+import com.rockthejvm.domain.User
 import skunk.{Codec, Command, Query, Session, Void, ~}
 import skunk.codec.all.*
 import skunk.implicits.*
-import skunk_guide.domain.User
-import skunk_guide.db.Repository
 import fs2.Stream
 
 import java.util.UUID
@@ -14,19 +13,19 @@ import java.util.UUID
 /**
   * Created by Bomen Derick.
   */
-private final class UserRepository[F[_]: Sync](resource: Resource[F, Session[F]]) extends Repository[F, User](resource) {
+final class UserRepository[F[_]: Sync](session: Session[F])
+  extends Repository[F, User](session) {
   import UserRepository.*
 
   def create(name: String, email: String): F[UUID] =
-    run { session =>
-      session.prepareR(insert).use { cmd =>
-        val userId = UUID.randomUUID()
-        cmd.execute(User(userId, name, email)).map(_ => userId)
-      }
-    }
+    for {
+      cmd    <- session.prepare(insert)
+      userId = UUID.randomUUID()
+      _      <- cmd.execute(User(userId, name, email))
+    } yield userId
 
   def findAll: Stream[F, User] =
-    Stream.evalSeq(run(_.execute(selectAll)))
+    Stream.evalSeq(session.execute(selectAll))
 
   def findById(id: UUID): F[Option[User]] =
     findOneBy(selectById, id)
@@ -40,13 +39,13 @@ private final class UserRepository[F[_]: Sync](resource: Resource[F, Session[F]]
 }
 
 object UserRepository {
-  def make[F[_]: Sync](resource: Resource[F, Session[F]]): F[UserRepository[F]] =
-    Sync[F].delay(new UserRepository[F](resource))
+  def make[F[_]: Sync](session: Session[F]): F[UserRepository[F]] =
+    Sync[F].delay(new UserRepository[F](session))
 
   private val codec: Codec[User] =
-    (uuid ~ varchar ~ varchar).imap {
-      case id ~ name ~ email => User(id, name, email)
-    }{user => user.id ~ user.name ~ user.email }
+    (uuid, varchar, varchar).tupled.imap {
+      case (id, name, email) => User(id, name, email)
+    } { user => (user.id, user.name, user.email) }
 
   private val selectAll: Query[Void, User] =
     sql"""

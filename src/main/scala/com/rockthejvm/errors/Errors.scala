@@ -1,4 +1,4 @@
-package skunk_guide.errors
+package com.rockthejvm.errors
 
 /**
   * Created by Bomen Derick.

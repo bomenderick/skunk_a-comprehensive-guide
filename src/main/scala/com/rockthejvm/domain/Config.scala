@@ -1,4 +1,4 @@
-package skunk_guide.domain
+package com.rockthejvm.domain
 
 import pureconfig.{ConfigReader, ConfigSource}
 import pureconfig.generic.derivation.default.*
