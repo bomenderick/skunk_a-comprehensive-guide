@@ -1,12 +1,12 @@
 package com.rockthejvm.db
 
-import cats.effect.{Resource, Sync}
+import cats.effect.Sync
 import cats.syntax.all.*
-import com.rockthejvm.domain.User
-import skunk.{Codec, Command, Query, Session, Void, ~}
-import skunk.codec.all.*
-import skunk.implicits.*
 import fs2.Stream
+import skunk.{Codec, Command, Query, Session, Void}
+import skunk.codec.all.*
+import skunk.syntax.all.*
+import com.rockthejvm.domain.User
 
 import java.util.UUID
 
@@ -35,7 +35,6 @@ final class UserRepository[F[_]: Sync](session: Session[F])
 
   def delete(id: UUID): F[Unit] =
     update(_delete, id)
-
 }
 
 object UserRepository {
