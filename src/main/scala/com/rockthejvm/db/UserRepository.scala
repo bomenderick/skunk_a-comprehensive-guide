@@ -10,9 +10,6 @@ import com.rockthejvm.domain.User
 
 import java.util.UUID
 
-/**
-  * Created by Bomen Derick.
-  */
 final class UserRepository[F[_]: Sync](session: Session[F])
   extends Repository[F, User](session) {
   import UserRepository.*

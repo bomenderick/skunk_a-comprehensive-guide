@@ -13,9 +13,6 @@ import com.rockthejvm.modules.DbConnection
 
 import java.util.UUID
 
-/**
-  * Created by Bomen Derick.
-  */
 object main extends IOApp {
 
   // creating a single database session

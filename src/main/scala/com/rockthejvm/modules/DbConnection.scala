@@ -7,9 +7,6 @@ import fs2.io.net.Network
 import natchez.Trace
 import skunk.Session
 
-/**
-  * Created by Bomen Derick.
-  */
 object DbConnection {
   def single[F[_] : Temporal : Trace : Network: Console](config: Config): Resource[F, Session[F]] = 
     Session.single(

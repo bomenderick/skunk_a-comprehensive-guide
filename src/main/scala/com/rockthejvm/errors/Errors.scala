@@ -1,8 +1,5 @@
 package com.rockthejvm.errors
 
-/**
-  * Created by Bomen Derick.
-  */
 object Errors {
   sealed trait AppError extends Throwable {
     def message: String
